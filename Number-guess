@@ -1,0 +1,63 @@
+import random
+
+def number_guessing_game():
+    score = 0
+    print("🎮 Welcome to the Number Guessing Game!")
+
+    while True:
+        number_to_guess = random.randint(1, 100)
+        max_attempts = 7
+        is_guessed = False
+
+        print("\nI have picked a number between 1 and 100.")
+        print(f"You have {max_attempts} attempts to guess it!")
+
+        for attempts in range(1, max_attempts + 1):
+            guess = int(input(f"\nAttempt {attempts} - Enter your guess: "))
+
+            if guess == number_to_guess:
+                print("Correct! You've guessed the number!")
+                score += 1
+                is_guessed = True
+                break
+            elif guess < number_to_guess:
+                print("Too low!")
+            else:
+                print("Too high!")
+
+            # Hints equivalent to Java's switch rule switch
+            if attempts == 1:
+                print("Hint: The number is " + ("greater than 50." if number_to_guess > 50 else "50 or less."))
+            elif attempts == 2:
+                print("Hint: The number is " + ("even." if number_to_guess % 2 == 0 else "odd."))
+            elif attempts == 3:
+                if number_to_guess % 5 == 0:
+                    print("Hint: The number is divisible by 5.")
+                elif number_to_guess % 3 == 0:
+                    print("Hint: The number is divisible by 3.")
+                else:
+                    print("Hint: The number is not divisible by 3 or 5.")
+            elif attempts == 4:
+                lower = max(1, number_to_guess - 10)
+                upper = min(100, number_to_guess + 10)
+                print(f"Hint: The number is between {lower} and {upper}.")
+            elif attempts == 5:
+                if number_to_guess < 10:
+                    print("Hint: It's a single-digit number.")
+                else:
+                    print("Hint: It's a two-digit number.")
+            elif attempts == 6:
+                tens = (number_to_guess // 10) * 10
+                print(f"Hint: The number is in the {tens}s range.")
+
+        if not is_guessed:
+            print(f"Out of attempts! The number was: {number_to_guess}")
+
+        play_again = input("\nPlay again? (yes/no): ").strip().lower()
+        if play_again != "yes":
+            break
+
+    print(f"\nGame Over. Your total score: {score}")
+
+if __name__ == "__main__":
+    number_guessing_game()
