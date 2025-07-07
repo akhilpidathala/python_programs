@@ -1,1 +1,1 @@
-# python_programs
+I have developed engaging Python games demonstrating efficient logic design and clean coding standards. Each project reflects my ability to build interactive, user-friendly applications with robust performance.
