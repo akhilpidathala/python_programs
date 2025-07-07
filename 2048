@@ -1,0 +1,164 @@
+import random
+import copy
+
+def initialize_grid():
+    """Initialize a 4x4 grid with two random tiles."""
+    grid = [[0] * 4 for _ in range(4)]
+    add_random_tile(grid)
+    add_random_tile(grid)
+    return grid
+
+def add_random_tile(grid):
+    """Add a 2 (90%) or 4 (10%) tile to a random empty cell."""
+    empty_cells = [(i, j) for i in range(4) for j in range(4) if grid[i][j] == 0]
+    if empty_cells:
+        i, j = random.choice(empty_cells)
+        grid[i][j] = 2 if random.random() < 0.9 else 4
+
+def display_grid(grid):
+    """Display the grid with formatted tiles."""
+    print("\n" + "=" * 25)
+    for row in grid:
+        print("|", end="")
+        for val in row:
+            if val == 0:
+                print("    .", end=" ")
+            else:
+                print(f"{val:>4}", end=" ")
+        print("|")
+    print("=" * 25)
+
+def slide_row_left(row):
+    """Slide a row left, merging equal tiles."""
+
+    non_zeros = [x for x in row if x != 0]
+
+    merged = []
+    i = 0
+    while i < len(non_zeros):
+        if i + 1 < len(non_zeros) and non_zeros[i] == non_zeros[i + 1]:
+            merged.append(non_zeros[i] * 2)
+            i += 2
+        else:
+            merged.append(non_zeros[i])
+            i += 1
+
+    return merged + [0] * (4 - len(merged))
+
+def move_left(grid):
+    """Apply left move to the entire grid."""
+    new_grid = [slide_row_left(row) for row in grid]
+    return new_grid
+
+def transpose(grid):
+    """Transpose the grid (swap rows and columns)."""
+    return [[grid[j][i] for j in range(4)] for i in range(4)]
+
+def reverse(grid):
+    """Reverse each row of the grid."""
+    return [row[::-1] for row in grid]
+
+def move_up(grid):
+    """Apply up move by transposing, moving left, and transposing back."""
+    grid = transpose(grid)
+    grid = move_left(grid)
+    return transpose(grid)
+
+def move_right(grid):
+    """Apply right move by reversing, moving left, and reversing back."""
+    grid = reverse(grid)
+    grid = move_left(grid)
+    return reverse(grid)
+
+def move_down(grid):
+    """Apply down move by transposing, reversing, moving left, and undoing."""
+    grid = transpose(grid)
+    grid = reverse(grid)
+    grid = move_left(grid)
+    grid = reverse(grid)
+    return transpose(grid)
+
+def is_game_over(grid):
+    """Check if no moves are possible (grid full, no adjacent equal tiles)."""
+
+    if any(0 in row for row in grid):
+        return False
+    for i in range(4):
+        for j in range(4):
+            if j < 3 and grid[i][j] == grid[i][j + 1]:
+                return False
+            if i < 3 and grid[i][j] == grid[i + 1][j]:
+                return False
+    return True
+
+def has_2048(grid):
+    """Check if a 2048 tile exists."""
+    return any(2048 in row for row in grid)
+
+def play_2048():
+    """Main game loop for 2048."""
+    grid = initialize_grid()
+    print("Welcome to 2048! Use WASD to move tiles (w=up, a=left, s=down, d=right).")
+    print("Press 'q' to quit. Create a 2048 tile to win!")
+
+    while True:
+        display_grid(grid)
+        try:
+            move = input("Enter move (w/a/s/d/q): ").lower()
+            if move == 'q':
+                print("Thanks for playing 2048!")
+                return
+
+            if move not in ['w', 'a', 's', 'd']:
+                print("Invalid input! Use w/a/s/d or q to quit.")
+                continue
+
+        
+            old_grid = copy.deepcopy(grid)
+           
+            if move == 'w':
+                grid = move_up(grid)
+            elif move == 'a':
+                grid = move_left(grid)
+            elif move == 's':
+                grid = move_down(grid)
+            elif move == 'd':
+                grid = move_right(grid)
+
+            if grid != old_grid:
+                add_random_tile(grid)
+            else:
+                print("No tiles moved! Try a different direction.")
+
+            if has_2048(grid):
+                display_grid(grid)
+                print("Congratulations! You created a 2048 tile!")
+                play_again = input("Continue playing? (yes/no): ").lower()
+                if play_again != 'yes':
+                    print("Thanks for playing 2048!")
+                    return
+
+            if is_game_over(grid):
+                display_grid(grid)
+                print("Game Over! No moves left.")
+                play_again = input("Would you like to play again? (yes/no): ").lower()
+                if play_again != 'yes':
+                    print("Thanks for playing 2048!")
+                    return
+                grid = initialize_grid()
+
+        except KeyboardInterrupt:
+            print("\nGame interrupted. Thanks for playing 2048!")
+            return
+
+
+while True:
+    play_2048()
+    try:
+        play_again = input("Would you like to play again? (yes/no): ").lower()
+        if play_again != 'yes':
+            print("Thanks for playing 2048!")
+            break
+    except KeyboardInterrupt:
+        print("\nThanks for playing 2048!")
+        break
