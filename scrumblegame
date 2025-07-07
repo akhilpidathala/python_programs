@@ -1,0 +1,130 @@
+import random
+def get_word_list():
+    """Return a list of 50 words with category hints."""
+    return [
+        ("python", "programming term"),
+        ("programming", "act of coding"),
+        ("computer", "electronic device"),
+        ("algorithm", "problem-solving steps"),
+        ("database", "data storage system"),
+        ("network", "interconnected system"),
+        ("software", "computer programs"),
+        ("developer", "code writer"),
+        ("coding", "software creation"),
+        ("interface", "user interaction point"),
+        ("function", "code block"),
+        ("variable", "data storage name"),
+        ("elephant", "large mammal"),
+        ("giraffe", "tall animal"),
+        ("kangaroo", "hopping marsupial"),
+        ("dolphin", "marine mammal"),
+        ("tiger", "striped feline"),
+        ("butterfly", "colorful insect"),
+        ("mountain", "natural elevation"),
+        ("river", "flowing water"),
+        ("forest", "tree-covered area"),
+        ("desert", "dry region"),
+        ("ocean", "vast saltwater"),
+        ("volcano", "erupting mountain"),
+        ("guitar", "stringed instrument"),
+        ("piano", "keyboard instrument"),
+        ("violin", "small stringed instrument"),
+        ("drums", "percussion instrument"),
+        ("trumpet", "brass instrument"),
+        ("flute", "woodwind instrument"),
+        ("bicycle", "two-wheeled vehicle"),
+        ("airplane", "flying vehicle"),
+        ("rocket", "space vehicle"),
+        ("submarine", "underwater vehicle"),
+        ("train", "rail vehicle"),
+        ("helicopter", "rotary aircraft"),
+        ("sunflower", "yellow flower"),
+        ("tulip", "spring flower"),
+        ("orchid", "exotic flower"),
+        ("cactus", "desert plant"),
+        ("bamboo", "fast-growing grass"),
+        ("maple", "syrup-producing tree"),
+        ("pizza", "Italian dish"),
+        ("sushi", "Japanese dish"),
+        ("burger", "sandwich with patty"),
+        ("pasta", "Italian dough dish"),
+        ("taco", "Mexican tortilla dish"),
+        ("sandwich", "bread-based food"),
+        ("compass", "navigation tool"),
+        ("telescope", "distance-viewing device")
+    ]
+
+def scramble_word(word):
+    
+    word_list = list(word)
+    random.shuffle(word_list)
+    while ''.join(word_list) == word and len(word) > 1:
+        random.shuffle(word_list)
+    return ''.join(word_list)
+
+def count_vowels(word):
+    
+    vowels = set('aeiou')
+    return sum(1 for letter in word.lower() if letter in vowels)
+
+def word_scramble_game():
+    
+    words = get_word_list()
+    max_attempts = 3
+
+    print("Welcome to Word Scramble!")
+    print("Unscramble the word using the hints provided. You have 3 attempts per word.")
+    print("Type 'quit' to exit at any time.")
+
+    word, category_hint = random.choice(words)
+    scrambled = scramble_word(word)
+    attempts = 0
+    hints_shown = 0
+    print(f"\nScrambled word: {scrambled}")
+    print(f"Hint 1: It's a {category_hint}")
+    print(f"Hint 2: Starts with {word[0].upper()}")
+    print(f"Attempts remaining: {max_attempts}")
+
+    while attempts < max_attempts:
+        try:
+            guess = input("Enter your guess: ").lower()
+            if guess == 'quit':
+                print(f"The word was: {word}")
+                print("Thanks for playing Word Scramble!")
+                return
+            if not guess.isalpha():
+                print("Please enter a word with letters only.")
+                continue
+            if len(guess) != len(word):
+                print(f"Your guess must be {len(word)} letters long.")
+                continue
+
+            attempts += 1
+            if guess == word:
+                print(f"Congratulations! You unscrambled the word: {word}")
+                return
+            else:
+                print("Incorrect guess. Try again!")
+                if attempts == 1 and hints_shown < 1:
+                    print(f"Hint 3: Ends with {word[-1].upper()}")
+                    hints_shown += 1
+                elif attempts == 2 and hints_shown < 2:
+                    vowel_count = count_vowels(word)
+                    print(f"Hint 4: Contains {vowel_count} vowel{'s' if vowel_count != 1 else ''}")
+                    hints_shown += 1
+                print(f"Attempts remaining: {max_attempts - attempts}")
+        except KeyboardInterrupt:
+            print(f"\nGame interrupted. The word was: {word}")
+            print("Thanks for playing Word Scramble!")
+            return
+    print(f"Game Over! The word was: {word}")
+while True:
+    word_scramble_game()
+    try:
+        play_again = input("\nWould you like to play again? (yes/no): ").lower()
+        if play_again != 'yes':
+            print("Goodbye!")
+            break
+    except KeyboardInterrupt:
+        print("\nGoodbye!")
+        break
